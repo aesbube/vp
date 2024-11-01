@@ -5,7 +5,7 @@ import mk.finki.ukim.mk.lab.service.EventBookingService;
 
 public class EventBookingServiceImpl implements EventBookingService {
     @Override
-    public EventBooking placeBooking(String eventName, String attendeeName, String attendeeAddress, int numberOfTickets) {
+    public EventBooking placeBooking(String eventName, String attendeeName, String attendeeAddress, Long numberOfTickets) {
         return new EventBooking(eventName, attendeeName, attendeeAddress, numberOfTickets);
     }
 }

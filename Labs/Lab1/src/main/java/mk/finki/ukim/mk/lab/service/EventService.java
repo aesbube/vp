@@ -8,5 +8,5 @@ import java.util.List;
 @Service
 public interface EventService {
     List<Event> listAll();
-    List<Event> searchEvents(String text);
+    List<Event> searchEvents(String text, Double minimalRating);
 }

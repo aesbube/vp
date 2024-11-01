@@ -13,18 +13,17 @@ import java.util.List;
 public class EventServiceImpl implements EventService {
     private final EventRepository eventRepository;
 
-    @Autowired
     public EventServiceImpl(EventRepository eventRepository) {
         this.eventRepository = eventRepository;
     }
 
     @Override
     public List<Event> listAll() {
-        return List.of();
+        return eventRepository.findAll();
     }
 
     @Override
-    public List<Event> searchEvents(String text) {
-        return List.of();
+    public List<Event> searchEvents(String text, Double minimalRating) {
+        return eventRepository.searchEvents(text, minimalRating);
     }
 }

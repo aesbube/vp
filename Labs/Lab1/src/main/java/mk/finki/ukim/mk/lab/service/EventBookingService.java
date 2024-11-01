@@ -5,5 +5,5 @@ import org.springframework.stereotype.Service;
 
 @Service
 public interface EventBookingService {
-    EventBooking placeBooking(String eventName, String attendeeName, String attendeeAddress, int numberOfTickets);
+    EventBooking placeBooking(String eventName, String attendeeName, String attendeeAddress, Long numberOfTickets);
 }
