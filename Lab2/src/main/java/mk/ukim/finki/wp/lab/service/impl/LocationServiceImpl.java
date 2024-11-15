@@ -26,5 +26,15 @@ public class LocationServiceImpl implements LocationService {
         return repository.findById(id);
     }
 
+    @Override
+    public Optional<Location> removeLocation(Long id) {
+        return repository.removeLocation(id);
+    }
+
+    @Override
+    public Optional<Location> addLocation(String name, String address, String capacity, String description) {
+        return repository.addLocation(name, address, capacity, description);
+    }
+
 
 }

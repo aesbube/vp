@@ -19,6 +19,18 @@ public class LocationRepository {
         locationList.add(new Location("Sunset Point Amphitheater", "678 Cliffside Ave, Malibu, CA", "5000", "An open-air amphitheater with breathtaking sunset views over the ocean."));
     }
 
+    public Optional<Location> addLocation(String name, String address, String capacity, String description) {
+        Location locationToAdd = new Location(name, address, capacity, description);
+        this.locationList.add(locationToAdd);
+        return Optional.of(locationToAdd);
+    }
+
+    public Optional<Location> removeLocation(Long id) {
+        Location locationToRemove = findById(id).get();
+        this.locationList.remove(locationToRemove);
+        return Optional.of(locationToRemove);
+    }
+
     public List<Location> findAll() {
         return locationList;
     }

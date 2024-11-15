@@ -2,6 +2,7 @@ package mk.ukim.finki.wp.lab.web.controller;
 
 
 import mk.ukim.finki.wp.lab.model.Event;
+import mk.ukim.finki.wp.lab.model.Location;
 import mk.ukim.finki.wp.lab.service.EventService;
 import mk.ukim.finki.wp.lab.service.LocationService;
 import org.springframework.stereotype.Controller;
@@ -57,6 +58,25 @@ public class EventController {
         model.addAttribute("event", event);
         model.addAttribute("locations", locationService.findAll());
         return "addEvent";
+    }
+
+    @GetMapping("/events/locations")
+    public String showLocations(Model model) {
+        List<Location> locations = locationService.findAll();
+        model.addAttribute("locations", locations);
+        return "locations";
+    }
+
+    @PostMapping("/events/locations/add")
+    public String addLocation(@RequestParam String name, @RequestParam String address, @RequestParam String capacity, @RequestParam String description) {
+        locationService.addLocation(name, address, capacity, description);
+        return "redirect:/events/locations";
+    }
+
+    @PostMapping("/events/locations/delete/{id}")
+    public String deleteLocation(@PathVariable Long id) {
+        locationService.removeLocation(id);
+        return "redirect:/events/locations";
     }
 
     @PostMapping("/events/add")

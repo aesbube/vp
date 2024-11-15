@@ -32,8 +32,19 @@ public class EventRepository {
 
 
     public List<Event> findAll() {
+        List<Event> eventsToDelete = new ArrayList<>();
+        for (Event event : events) {
+            Optional<Location> location = locationService.findById(event.getLocation().getId());
+            if (location.isEmpty()) {
+                eventsToDelete.add(event);
+            }
+        }
+        for (Event event : eventsToDelete) {
+            deleteEvent(event.getId());
+        }
         return events;
     }
+
     public Optional<Event> findById(Long id) {
         return events.stream().filter(e -> e.getId().equals(id)).findFirst();
     }
