@@ -51,7 +51,7 @@ public class EventRepository {
 
     public List<Event> searchEvents(String text, Double minRating) {
         return events.stream()
-                .filter(e -> (text == null || e.getName().contains(text) || e.getDescription().contains(text)) &&
+                .filter(e -> (text == null || e.getName().toLowerCase().contains(text.toLowerCase()) || e.getDescription().toLowerCase().contains(text.toLowerCase())) &&
                         (minRating == null || e.getPopularityScore() >= minRating))
                 .collect(Collectors.toList());
     }
