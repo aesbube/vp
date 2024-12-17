@@ -14,9 +14,20 @@ public class Location {
 
     private String name;
     private String address;
-    private String capacity;
+    private Integer capacity;
     private String description;
 
     @OneToMany(mappedBy = "location")
     private List<Event> events;
+
+    public Location(String name, String address, Integer capacity, String description) {
+        this.name = name;
+        this.address = address;
+        this.capacity = capacity;
+        this.description = description;
+    }
+
+    public Location() {
+
+    }
 }

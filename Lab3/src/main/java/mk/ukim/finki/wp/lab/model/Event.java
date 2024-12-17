@@ -17,4 +17,13 @@ public class Event {
     @ManyToOne
     @JoinColumn(name = "locationid")
     private Location location;
+
+    public Event(String name, String description, double popularityScore, Location location) {
+        this.name = name;
+        this.description = description;
+        this.popularityScore = popularityScore;
+        this.location = location;
+    }
+
+    public Event() {}
 }

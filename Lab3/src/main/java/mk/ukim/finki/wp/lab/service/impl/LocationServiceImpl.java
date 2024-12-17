@@ -41,7 +41,7 @@ public class LocationServiceImpl implements LocationService {
         Location location = new Location();
         location.setName(name);
         location.setAddress(address);
-        location.setCapacity(capacity);
+        location.setCapacity(Integer.parseInt(capacity));
         location.setDescription(description);
         return Optional.of(repository.save(location));
     }
