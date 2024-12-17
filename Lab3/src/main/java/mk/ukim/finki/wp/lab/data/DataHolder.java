@@ -26,7 +26,6 @@ public class DataHolder {
 
     @PostConstruct
     public void init() {
-        // Initialize Locations
         locationList = new ArrayList<>(5);
         if (locationRepository.count() == 0) {
             locationList.add(new Location("Skyline Plaza", "123 City Center, Chicago, IL", 3500, "A modern rooftop venue with panoramic views of the city skyline."));
@@ -38,7 +37,6 @@ public class DataHolder {
             locationRepository.saveAll(locationList);
         }
 
-        // Initialize Events
         eventList = new ArrayList<>(10);
         if (eventRepository.count() == 0) {
             eventList.add(new Event("Tame Impala Concert", "Psychedelic Night in San Francisco", 9.2, locationList.get(0)));
@@ -55,7 +53,6 @@ public class DataHolder {
             eventRepository.saveAll(eventList);
         }
 
-        // Initialize Event Bookings if needed
         eventBookingList = new ArrayList<>();
     }
 }
