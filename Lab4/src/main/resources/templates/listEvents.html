@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<html lang="en" xmlns:th="http://www.thymeleaf.org" xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
 <head>
     <meta charset="UTF-8">
     <title>Event Booking page - Welcome and choose an Event</title>
@@ -31,6 +31,18 @@
         <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
     </div>
     <section>
+        <div>
+            <th:block sec:authorize="isAuthenticated()">
+                <form th:action="@{/logout}" th:method="POST">
+                    <button type="submit">Logout</button>
+                </form>
+            </th:block>
+            <th:block sec:authorize="isAnonymous()">
+                <form th:action="@{/login}" th:method="GET">
+                    <button type="submit">Login</button>
+                </form>
+            </th:block>
+        </div>
         <form th:action="@{/}" th:method="GET">
             <h3>Find an Event</h3>
             <label for="searchText">Event Name:</label>
@@ -46,10 +58,13 @@
             <input type="submit" value="Search">
         </form>
     </section>
+
     <section style="margin-top: 10px">
-        <a th:href="@{'/eventBooking'}">
-            <button type="button">Booked Events</button>
-        </a>
+        <th:block sec:authorize="hasRole('ROLE_ADMIN')">
+            <a th:href="@{'/eventBooking'}">
+                <button type="button">Booked Events</button>
+            </a>
+        </th:block>
         <h2>Select an Event</h2>
         <th:block th:each="event : ${events}">
             <label>
@@ -61,40 +76,45 @@
                 <span th:text="${event.location.name}"></span>
             </label>
             <div style="display: block; margin-top: 5px">
-                <a th:href="@{'/events/edit/{eventId}' (eventId=${event.id})}">
-                    <button type="button">Edit Event</button>
-                </a>
-                <form th:method="POST" style="display: inline-block; margin-left: 10px"
-                      th:action="@{'/events/delete/{id}' (id=${event.id})}">
-                    <button type="submit">Delete</button>
-                </form>
+                <th:block sec:authorize="hasRole('ROLE_ADMIN')">
+                    <a th:href="@{'/events/edit/{eventId}' (eventId=${event.id})}">
+                        <button type="button">Edit Event</button>
+                    </a>
+                    <form th:method="POST" style="display: inline-block; margin-left: 10px"
+                          th:action="@{'/events/delete/{id}' (id=${event.id})}">
+                        <button type="submit">Delete</button>
+                    </form>
+                </th:block>
             </div>
             <br>
         </th:block>
-
-        <a th:href="@{'/events/add'}">
-            <button type="button">Add an Event</button>
-        </a>
-        <a th:href="@{'/events/locations'}" style="margin-left: 10px">
-            <button type="button">Locations</button>
-        </a>
+        <th:block sec:authorize="hasRole('ROLE_ADMIN')">
+            <a th:href="@{'/events/add'}">
+                <button type="button">Add an Event</button>
+            </a>
+            <a th:href="@{'/events/locations'}" style="margin-left: 10px">
+                <button type="button">Locations</button>
+            </a>
+        </th:block>
     </section>
-    <section style="margin-bottom: 20px">
-        <form th:action="@{/eventBooking}" th:method="POST">
-            <h2>Tickets</h2>
-            <label for="numTickets">Quantity:</label>
-            <input type="number" id="numTickets" name="numTickets" min="1" max="10" required>
+    <th:block sec:authorize="hasRole('ROLE_ADMIN')">
+        <section style="margin-bottom: 20px">
+            <form th:action="@{/eventBooking}" th:method="POST">
+                <h2>Tickets</h2>
+                <label for="numTickets">Quantity:</label>
+                <input type="number" id="numTickets" name="numTickets" min="1" max="10" required>
 
-            <h2>Your Information</h2>
-            <label for="attendeeName">Name:</label>
-            <input type="text" id="attendeeName" name="attendeeName" required>
+                <h2>Your Information</h2>
+                <label for="attendeeName">Name:</label>
+                <input type="text" id="attendeeName" name="attendeeName" required>
 
-            <label for="attendeeAddress">Address:</label>
-            <input type="text" id="attendeeAddress" name="attendeeAddress" required>
-            <input type="hidden" id="hiddenEventName" name="eventName" required>
-            <input type="submit" value="Book Event">
-        </form>
-    </section>
+                <label for="attendeeAddress">Address:</label>
+                <input type="text" id="attendeeAddress" name="attendeeAddress" required>
+                <input type="hidden" id="hiddenEventName" name="eventName" required>
+                <input type="submit" value="Book Event">
+            </form>
+        </section>
+    </th:block>
 </main>
 </body>
 </html>

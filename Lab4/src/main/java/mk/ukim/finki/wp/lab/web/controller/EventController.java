@@ -7,6 +7,7 @@ import mk.ukim.finki.wp.lab.model.Event;
 import mk.ukim.finki.wp.lab.model.Location;
 import mk.ukim.finki.wp.lab.service.EventService;
 import mk.ukim.finki.wp.lab.service.LocationService;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
@@ -40,7 +41,8 @@ public class EventController {
         model.addAttribute("error", error);
         return "listEvents";
     }
-    
+
+    @PreAuthorize("hasRole('ADMIN')")
     @GetMapping("/events/add")
     public String showAdd(Model model) {
         model.addAttribute("mode", "add");
@@ -48,6 +50,7 @@ public class EventController {
         return "addEvent";
     }
 
+    @PreAuthorize("hasRole('ADMIN')")
     @GetMapping("/events/edit/{eventId}")
     public String showEdit(@PathVariable Long eventId, RedirectAttributes redirectAttributes, Model model) {
         Optional<Event> eventOptional = eventService.findById(eventId);
@@ -63,6 +66,7 @@ public class EventController {
         return "addEvent";
     }
 
+    @PreAuthorize("hasRole('ADMIN')")
     @GetMapping("/events/locations")
     public String showLocations(Model model) {
         List<Location> locations = locationService.findAll();
@@ -70,30 +74,35 @@ public class EventController {
         return "locations";
     }
 
+    @PreAuthorize("hasRole('ADMIN')")
     @PostMapping("/events/locations/add")
     public String addLocation(@RequestParam String name, @RequestParam String address, @RequestParam String capacity, @RequestParam String description) {
         locationService.addLocation(name, address, capacity, description);
         return "redirect:/events/locations";
     }
 
+    @PreAuthorize("hasRole('ADMIN')")
     @PostMapping("/events/locations/delete/{id}")
     public String deleteLocation(@PathVariable Long id) {
         locationService.removeLocation(id);
         return "redirect:/events/locations";
     }
 
+    @PreAuthorize("hasRole('ADMIN')")
     @PostMapping("/events/add")
     public String saveEvent(@RequestParam String name, @RequestParam String description, @RequestParam Double popularityScore, @RequestParam Long locationID) {
         eventService.saveEvent(name, description, popularityScore, locationID);
         return "redirect:/events";
     }
 
+    @PreAuthorize("hasRole('ADMIN')")
     @PostMapping("/events/edit/{eventId}")
     public String editEvent(@PathVariable Long eventId, @RequestParam String name, @RequestParam String description, @RequestParam Double popularityScore, @RequestParam Long locationID) {
         eventService.editEvent(eventId, name, description, popularityScore, locationID);
         return "redirect:/events";
     }
 
+    @PreAuthorize("hasRole('ADMIN')")
     @PostMapping("/events/delete/{id}")
     public String deleteEvent(@PathVariable Long id) {
         eventService.deleteEvent(id);
