@@ -59,7 +59,7 @@ public class ReservationsController {
      *
      * @return The view "form.html".
      */
-    @PreAuthorize("hasRole('ADMIN')")
+//    @PreAuthorize("hasRole('ADMIN')")
     @GetMapping("/add")
     public String showAdd(Model model) {
         model.addAttribute("roomTypes", Arrays.stream(RoomType.values()).toList());
@@ -74,7 +74,7 @@ public class ReservationsController {
      *
      * @return The view "form.html".
      */
-    @PreAuthorize("hasRole('ADMIN')")
+//    @PreAuthorize("hasRole('ADMIN')")
     @GetMapping("/edit/{id}")
     public String showEdit(@PathVariable Long id, Model model) {
         model.addAttribute("reservation", this.reservationService.findById(id));
@@ -90,7 +90,7 @@ public class ReservationsController {
      *
      * @return The view "list.html".
      */
-    @PreAuthorize("hasRole('ADMIN')")
+//    @PreAuthorize("hasRole('ADMIN')")
     @PostMapping()
     public String create(@RequestParam String guestName, @RequestParam LocalDate dateCreated, @RequestParam Integer daysOfStay, @RequestParam RoomType roomType, @RequestParam Long hotelId) {
         this.reservationService.create(guestName, dateCreated, daysOfStay, roomType, hotelId);
@@ -104,7 +104,7 @@ public class ReservationsController {
      *
      * @return The view "list.html".
      */
-    @PreAuthorize("hasRole('ADMIN')")
+//    @PreAuthorize("hasRole('ADMIN')")
     @PostMapping("/{id}")
     public String update(@PathVariable Long id, @RequestParam String guestName, @RequestParam LocalDate dateCreated, @RequestParam Integer daysOfStay, @RequestParam RoomType roomType, @RequestParam Long hotelId) {
         this.reservationService.update(id, guestName, dateCreated, daysOfStay, roomType, hotelId);
@@ -118,7 +118,7 @@ public class ReservationsController {
      *
      * @return The view "list.html".
      */
-    @PreAuthorize("hasRole('ADMIN')")
+//    @PreAuthorize("hasRole('ADMIN')")
     @PostMapping("/delete/{id}")
     public String delete(@PathVariable Long id) {
         this.reservationService.delete(id);
@@ -133,7 +133,7 @@ public class ReservationsController {
      *
      * @return The view "list.html".
      */
-    @PreAuthorize("hasRole('USER')")
+//    @PreAuthorize("hasRole('USER')")
     @PostMapping("/extend/{id}")
     public String extend(@PathVariable Long id) {
         this.reservationService.extendStay(id);
