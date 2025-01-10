@@ -2,6 +2,7 @@ package mk.ukim.finki.wp.kol2024g1.web;
 
 import mk.ukim.finki.wp.kol2024g1.model.Reservation;
 import mk.ukim.finki.wp.kol2024g1.model.RoomType;
+import mk.ukim.finki.wp.kol2024g1.model.exceptions.InvalidReservationIdException;
 import mk.ukim.finki.wp.kol2024g1.service.HotelService;
 import mk.ukim.finki.wp.kol2024g1.service.ReservationService;
 import org.springframework.data.domain.Page;
@@ -77,7 +78,11 @@ public class ReservationsController {
 //    @PreAuthorize("hasRole('ADMIN')")
     @GetMapping("/edit/{id}")
     public String showEdit(@PathVariable Long id, Model model) {
-        model.addAttribute("reservation", this.reservationService.findById(id));
+        try {
+            model.addAttribute("reservation", this.reservationService.findById(id));
+        } catch (InvalidReservationIdException e) {
+            return "redirect:/reservations";
+        }
         model.addAttribute("roomTypes", Arrays.stream(RoomType.values()).toList());
         model.addAttribute("hotels", this.hotelService.listAll());
         return "form";
