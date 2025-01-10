@@ -1,16 +1,16 @@
-package mk.ukim.finki.wp.kol2023.g1;
+package mk.ukim.finki.wp.kol2023.g2;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import mk.ukim.finki.wp.exam.util.CodeExtractor;
-import mk.ukim.finki.wp.kol2023.g1.model.Player;
-import mk.ukim.finki.wp.kol2023.g1.selenium.AbstractPage;
-import mk.ukim.finki.wp.kol2023.g1.selenium.AddOrEditPlayer;
-import mk.ukim.finki.wp.kol2023.g1.selenium.ItemsPage;
-import mk.ukim.finki.wp.kol2023.g1.selenium.LoginPage;
-import mk.ukim.finki.wp.kol2023.g1.model.Team;
-import mk.ukim.finki.wp.kol2023.g1.model.PlayerPosition;
-import mk.ukim.finki.wp.kol2023.g1.service.TeamService;
-import mk.ukim.finki.wp.kol2023.g1.service.PlayerService;
+import mk.ukim.finki.wp.kol2023.g2.model.Director;
+import mk.ukim.finki.wp.kol2023.g2.model.Movie;
+import mk.ukim.finki.wp.kol2023.g2.selenium.AbstractPage;
+import mk.ukim.finki.wp.kol2023.g2.selenium.AddOrEditMovie;
+import mk.ukim.finki.wp.kol2023.g2.selenium.ItemsPage;
+import mk.ukim.finki.wp.kol2023.g2.selenium.LoginPage;
+import mk.ukim.finki.wp.kol2023.g2.model.Genre;
+import mk.ukim.finki.wp.kol2023.g2.service.DirectorService;
+import mk.ukim.finki.wp.kol2023.g2.service.MovieService;
 import mk.ukim.finki.wp.exam.util.ExamAssert;
 import mk.ukim.finki.wp.exam.util.SubmissionHelper;
 import org.hamcrest.Description;
@@ -20,7 +20,6 @@ import org.openqa.selenium.By;
 import org.openqa.selenium.htmlunit.HtmlUnitDriver;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
-//import org.springframework.security.test.context.support.WithMockUser;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.request.MockHttpServletRequestBuilder;
@@ -38,22 +37,22 @@ import java.util.List;
 public class SeleniumScenarioTest {
 
     static {
-        SubmissionHelper.exam = "wp-kol2023-g1";
-        SubmissionHelper.index = "221173";
+        SubmissionHelper.exam = "wp-kol2023-g2";
+        SubmissionHelper.index = "TODO";
     }
 
     @Autowired
-    TeamService teamService;
+    DirectorService directorService;
 
     @Autowired
-    PlayerService playerService;
+    MovieService movieService;
 
     @Order(1)
     @Test
     public void test_list_15pt() {
         SubmissionHelper.startTest("test-list-15",15);
-        List<Player> players = this.playerService.listAllPlayers();
-        int itemNum = players.size();
+        List<Movie> movies = this.movieService.listAllMovies();
+        int itemNum = movies.size();
 
         ExamAssert.assertNotEquals("Empty db", 0, itemNum);
 
@@ -76,10 +75,10 @@ public class SeleniumScenarioTest {
         listPage.filter("45.0", "");
         listPage.assertItems(2);
 
-        listPage.filter("", PlayerPosition.G.name());
+        listPage.filter("", Genre.Action.name());
         listPage.assertItems(3);
 
-        listPage.filter("100.0", PlayerPosition.G.name());
+        listPage.filter("100.0", Genre.Action.name());
         listPage.assertItems(1);
 
         SubmissionHelper.endTest();
@@ -90,10 +89,10 @@ public class SeleniumScenarioTest {
     public void test_filter_service_5pt() {
         SubmissionHelper.startTest("test-filter-service-5",5);
 
-        ExamAssert.assertEquals("without filter", 10, this.playerService.listPlayersWithPointsLessThanAndPosition(null, null).size());
-        ExamAssert.assertEquals("by points less than only", 2, this.playerService.listPlayersWithPointsLessThanAndPosition(45.0, null).size());
-        ExamAssert.assertEquals("by position only", 3, this.playerService.listPlayersWithPointsLessThanAndPosition(null, PlayerPosition.G).size());
-        ExamAssert.assertEquals("by points less than and position", 1, this.playerService.listPlayersWithPointsLessThanAndPosition(100.0, PlayerPosition.G).size());
+        ExamAssert.assertEquals("without filter", 10, this.movieService.listMoviesWithRatingLessThenAndGenre(null, null).size());
+        ExamAssert.assertEquals("by rating less than only", 2, this.movieService.listMoviesWithRatingLessThenAndGenre(45.0, null).size());
+        ExamAssert.assertEquals("by genre only", 3, this.movieService.listMoviesWithRatingLessThenAndGenre(null, Genre.Action).size());
+        ExamAssert.assertEquals("by rating less than and genre", 1, this.movieService.listMoviesWithRatingLessThenAndGenre(100.0, Genre.Action).size());
 
         SubmissionHelper.endTest();
     }
@@ -102,10 +101,10 @@ public class SeleniumScenarioTest {
     @Test
     public void test_create_10pt() {
         SubmissionHelper.startTest("test-create-10",10);
-        List<Team> teams = this.teamService.listAll();
-        List<Player> players = this.playerService.listAllPlayers();
+        List<Director> directors = this.directorService.listAll();
+        List<Movie> movies = this.movieService.listAllMovies();
 
-        int itemNum = players.size();
+        int itemNum = movies.size();
         ItemsPage listPage = null;
 
         try {
@@ -113,7 +112,7 @@ public class SeleniumScenarioTest {
             listPage = LoginPage.doLogin(this.driver, loginPage, admin, admin);
         } catch (Exception e) {
         }
-        listPage = AddOrEditPlayer.add(this.driver, ADD_URL, "testName", "testBio", "100", PlayerPosition.G.name(), teams.get(0).getId().toString());
+        listPage = AddOrEditMovie.add(this.driver, ADD_URL, "testName", "testDesc", "100", Genre.Action.name(), directors.get(0).getId().toString());
         AbstractPage.assertRelativeUrl(this.driver, LIST_URL);
         listPage.assertNoError();
         listPage.assertItems(itemNum + 1);
@@ -125,29 +124,29 @@ public class SeleniumScenarioTest {
     @Test
     public void test_create_mvc_10pt() throws Exception {
         SubmissionHelper.startTest("test-create-mvc-10",10);
-        List<Team> teams = this.teamService.listAll();
-        List<Player> players = this.playerService.listAllPlayers();
+        List<Director> directors = this.directorService.listAll();
+        List<Movie> movies = this.movieService.listAllMovies();
 
-        int itemNum = players.size();
+        int itemNum = movies.size();
 
         MockHttpServletRequestBuilder addRequest = MockMvcRequestBuilders
-                .post("/players")
+                .post("/movies")
                 .param("name", "testName")
-                .param("bio", "testBio")
-                .param("pointsPerGame", "45.0")
-                .param("position", PlayerPosition.G.name())
-                .param("team", teams.get(0).getId().toString());
+                .param("description", "testDesc")
+                .param("rating", "45.0")
+                .param("genre", Genre.Action.name())
+                .param("director", directors.get(0).getId().toString());
 
         this.mockMvc.perform(addRequest)
                 .andDo(MockMvcResultHandlers.print())
                 .andExpect(MockMvcResultMatchers.status().is3xxRedirection())
                 .andExpect(MockMvcResultMatchers.redirectedUrl(LIST_URL));
 
-        players = this.playerService.listAllPlayers();
-        ExamAssert.assertEquals("Number of items", itemNum + 1, players.size());
+        movies = this.movieService.listAllMovies();
+        ExamAssert.assertEquals("Number of items", itemNum + 1, movies.size());
 
         addRequest = MockMvcRequestBuilders
-                .get("/players/add");
+                .get("/movies/add");
 
         this.mockMvc.perform(addRequest)
                 .andDo(MockMvcResultHandlers.print())
@@ -161,10 +160,10 @@ public class SeleniumScenarioTest {
     @Test
     public void test_edit_10pt() {
         SubmissionHelper.startTest("test-edit-10",10);
-        List<Team> teams = this.teamService.listAll();
-        List<Player> players = this.playerService.listAllPlayers();
+        List<Director> directors = this.directorService.listAll();
+        List<Movie> movies = this.movieService.listAllMovies();
 
-        int itemNum = players.size();
+        int itemNum = movies.size();
 
         ItemsPage listPage = null;
         try {
@@ -179,12 +178,12 @@ public class SeleniumScenarioTest {
             listPage = ItemsPage.to(this.driver);
         }
 
-        listPage = AddOrEditPlayer.update(this.driver, listPage.getEditButtons().get(itemNum - 1), "testName", "testBio", "100", PlayerPosition.G.name(), teams.get(0).getId().toString());
+        listPage = AddOrEditMovie.update(this.driver, listPage.getEditButtons().get(itemNum - 1), "testName", "testDesc", "100", Genre.Action.name(), directors.get(0).getId().toString());
         listPage.assertNoError();
 
         AbstractPage.assertRelativeUrl(this.driver, LIST_URL);
         if (listPage.assertItems(itemNum)) {
-            ExamAssert.assertEquals("The updated player name is not as expected.", "testName", listPage.getRows().get(itemNum - 1).findElements(By.tagName("td")).get(0).getText().trim());
+            ExamAssert.assertEquals("The updated movie name is not as expected.", "testName", listPage.getRows().get(itemNum - 1).findElements(By.tagName("td")).get(0).getText().trim());
         }
 
         SubmissionHelper.endTest();
@@ -194,30 +193,30 @@ public class SeleniumScenarioTest {
     @Test
     public void test_edit_mvc_10pt() throws Exception {
         SubmissionHelper.startTest("test-edit-mvc-10",10);
-        List<Team> teams = this.teamService.listAll();
-        List<Player> players = this.playerService.listAllPlayers();
+        List<Director> directors = this.directorService.listAll();
+        List<Movie> movies = this.movieService.listAllMovies();
 
-        int itemNum = players.size();
+        int itemNum = movies.size();
 
         MockHttpServletRequestBuilder request = MockMvcRequestBuilders
-                .post("/players/" + players.get(itemNum - 1).getId())
+                .post("/movies/" + movies.get(itemNum - 1).getId())
                 .param("name", "testName")
-                .param("bio", "testBio")
-                .param("pointsPerGame", "100")
-                .param("position", PlayerPosition.G.name())
-                .param("team", teams.get(0).getId().toString());
+                .param("description", "testDesc")
+                .param("rating", "100")
+                .param("genre", Genre.Action.name())
+                .param("director", directors.get(0).getId().toString());
 
         this.mockMvc.perform(request)
                 .andDo(MockMvcResultHandlers.print())
                 .andExpect(MockMvcResultMatchers.status().is3xxRedirection())
                 .andExpect(MockMvcResultMatchers.redirectedUrl(LIST_URL));
 
-        players = this.playerService.listAllPlayers();
-        ExamAssert.assertEquals("Number of items", itemNum, players.size());
-        ExamAssert.assertEquals("The updated player name is not as expected.", "testName", players.get(itemNum - 1).getName());
+        movies = this.movieService.listAllMovies();
+        ExamAssert.assertEquals("Number of items", itemNum, movies.size());
+        ExamAssert.assertEquals("The updated movie name is not as expected.", "testName", movies.get(itemNum - 1).getName());
 
         request = MockMvcRequestBuilders
-                .get("/players/" + players.get(itemNum - 1).getId() + "/edit");
+                .get("/movies/" + movies.get(itemNum - 1).getId() + "/edit");
 
         this.mockMvc.perform(request)
                 .andDo(MockMvcResultHandlers.print())
@@ -230,9 +229,9 @@ public class SeleniumScenarioTest {
     @Order(8)
     @Test
     public void test_delete_5pt() throws Exception {
-        SubmissionHelper.startTest("test-delete-5",5);
-        List<Player> players = this.playerService.listAllPlayers();
-        int itemNum = players.size();
+        SubmissionHelper.startTest("test-delete-5", 5);
+        List<Movie> movies = this.movieService.listAllMovies();
+        int itemNum = movies.size();
 
         ItemsPage listPage = null;
         try {
@@ -260,19 +259,19 @@ public class SeleniumScenarioTest {
     @Test
     public void test_delete_mvc_5pt() throws Exception {
         SubmissionHelper.startTest("test-delete-5",5);
-        List<Player> players = this.playerService.listAllPlayers();
-        int itemNum = players.size();
+        List<Movie> movies = this.movieService.listAllMovies();
+        int itemNum = movies.size();
 
         MockHttpServletRequestBuilder request = MockMvcRequestBuilders
-                .post("/players/" + players.get(itemNum - 1).getId() + "/delete");
+                .post("/movies/" + movies.get(itemNum - 1).getId() + "/delete");
 
         this.mockMvc.perform(request)
                 .andDo(MockMvcResultHandlers.print())
                 .andExpect(MockMvcResultMatchers.status().is3xxRedirection())
                 .andExpect(MockMvcResultMatchers.redirectedUrl(LIST_URL));
 
-        players = this.playerService.listAllPlayers();
-        ExamAssert.assertEquals("Number of items", itemNum - 1, players.size());
+        movies = this.movieService.listAllMovies();
+        ExamAssert.assertEquals("Number of items", itemNum - 1, movies.size());
 
         SubmissionHelper.endTest();
     }
@@ -281,8 +280,8 @@ public class SeleniumScenarioTest {
     @Test
     public void test_security_urls_10pt() {
         SubmissionHelper.startTest("test-security-urls-10",10);
-        List<Player> players = this.playerService.listAllPlayers();
-        String editUrl = "/players/" + players.get(0).getId() + "/edit";
+        List<Movie> movies = this.movieService.listAllMovies();
+        String editUrl = "/movies/" + movies.get(0).getId() + "/edit";
 
         ItemsPage.to(this.driver);
         AbstractPage.assertRelativeUrl(this.driver, "/");
@@ -319,21 +318,21 @@ public class SeleniumScenarioTest {
     @Test
     public void test_security_buttons_10pt() {
         SubmissionHelper.startTest("test-security-buttons-10",10);
-        List<Player> players = this.playerService.listAllPlayers();
-        int itemNum = players.size();
+        List<Movie> movies = this.movieService.listAllMovies();
+        int itemNum = movies.size();
 
-        ItemsPage playersPage = ItemsPage.to(this.driver);
+        ItemsPage moviesPage = ItemsPage.to(this.driver);
         AbstractPage.assertRelativeUrl(this.driver, "/");
-        playersPage.assertButtons(0, 0, 0, 0);
+        moviesPage.assertButtons(0, 0, 0, 0);
 
         LoginPage loginPage1 = LoginPage.openLogin(this.driver);
-        playersPage = LoginPage.doLogin(this.driver, loginPage1, admin, admin);
-        playersPage.assertButtons(itemNum, itemNum, 1, 0);
+        moviesPage = LoginPage.doLogin(this.driver, loginPage1, admin, admin);
+        moviesPage.assertButtons(itemNum, itemNum, 1, 0);
         LoginPage.logout(this.driver);
 
         LoginPage loginPage2 = LoginPage.openLogin(this.driver);
-        playersPage = LoginPage.doLogin(this.driver, loginPage2, user, user);
-        playersPage.assertButtons(0, 0, 0, itemNum);
+        moviesPage = LoginPage.doLogin(this.driver, loginPage2, user, user);
+        moviesPage.assertButtons(0, 0, 0, itemNum);
         LoginPage.logout(this.driver);
         SubmissionHelper.endTest();
     }
@@ -342,9 +341,9 @@ public class SeleniumScenarioTest {
     @Test
     public void test_vote_3pt() throws Exception {
         SubmissionHelper.startTest("test-vote-3",3);
-        List<Player> players = this.playerService.listAllPlayers();
+        List<Movie> movies = this.movieService.listAllMovies();
 
-        int itemNum = players.size();
+        int itemNum = movies.size();
 
         ItemsPage listPage = null;
         try {
@@ -363,7 +362,7 @@ public class SeleniumScenarioTest {
         listPage.assertNoError();
 
         AbstractPage.assertRelativeUrl(this.driver, LIST_URL);
-        ExamAssert.assertEquals("The updated player votes number is not as expected.", "1", listPage.getRows().get(itemNum - 1).findElements(By.tagName("td")).get(5).getText().trim());
+        ExamAssert.assertEquals("The updated movie votes number is not as expected.", "1", listPage.getRows().get(itemNum - 1).findElements(By.tagName("td")).get(5).getText().trim());
 
         SubmissionHelper.endTest();
     }
@@ -372,20 +371,20 @@ public class SeleniumScenarioTest {
     @Test
     public void test_vote_mvc_2pt() throws Exception {
         SubmissionHelper.startTest("test-vote-mvc-2",2);
-        List<Player> players = this.playerService.listAllPlayers();
+        List<Movie> movies = this.movieService.listAllMovies();
 
-        int itemNum = players.size();
+        int itemNum = movies.size();
 
         MockHttpServletRequestBuilder request = MockMvcRequestBuilders
-                .post("/players/" + players.get(0).getId() + "/vote");
+                .post("/movies/" + movies.get(0).getId() + "/vote");
 
         this.mockMvc.perform(request)
                 .andDo(MockMvcResultHandlers.print())
                 .andExpect(MockMvcResultMatchers.status().is3xxRedirection())
                 .andExpect(MockMvcResultMatchers.redirectedUrl(LIST_URL));
 
-        players = this.playerService.listAllPlayers();
-        ExamAssert.assertEquals("Number of votes", players.get(0).getVotes(), 1);
+        movies = this.movieService.listAllMovies();
+        ExamAssert.assertEquals("Number of votes", movies.get(0).getVotes(), 1);
 
         SubmissionHelper.endTest();
     }
@@ -414,8 +413,8 @@ public class SeleniumScenarioTest {
         CodeExtractor.submitSourcesAndLogs();
     }
 
-    public static final String LIST_URL = "/players";
-    public static final String ADD_URL = "/players/add";
+    public static final String LIST_URL = "/movies";
+    public static final String ADD_URL = "/movies/add";
     public static final String LOGIN_URL = "/login";
 
     static class ViewMatcher implements Matcher<String> {
@@ -448,3 +447,4 @@ public class SeleniumScenarioTest {
         }
     }
 }
+

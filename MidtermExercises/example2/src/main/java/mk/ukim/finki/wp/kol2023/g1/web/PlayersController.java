@@ -2,6 +2,7 @@ package mk.ukim.finki.wp.kol2023.g1.web;
 
 import mk.ukim.finki.wp.kol2023.g1.model.Player;
 import mk.ukim.finki.wp.kol2023.g1.model.PlayerPosition;
+import mk.ukim.finki.wp.kol2023.g1.model.exceptions.InvalidPlayerIdException;
 import mk.ukim.finki.wp.kol2023.g1.service.PlayerService;
 import mk.ukim.finki.wp.kol2023.g1.service.TeamService;
 import org.springframework.security.access.prepost.PreAuthorize;
@@ -50,7 +51,7 @@ public class PlayersController {
      *
      * @return The view "form.html".
      */
-    @PreAuthorize("hasRole('ADMIN')")
+//    @PreAuthorize("hasRole('ADMIN')")
     @GetMapping("/add")
     public String showAdd(Model model) {
         model.addAttribute("teams", this.teamService.listAll());
@@ -65,10 +66,15 @@ public class PlayersController {
      *
      * @return The view "form.html".
      */
-    @PreAuthorize("hasRole('ADMIN')")
+//    @PreAuthorize("hasRole('ADMIN')")
     @GetMapping("/{id}/edit")
     public String showEdit(@PathVariable Long id, Model model) {
-        model.addAttribute("player", this.playerService.findById(id));
+        try {
+            Player player = this.playerService.findById(id);
+            model.addAttribute("player", player);
+        } catch (InvalidPlayerIdException e) {
+            return "redirect:/players";
+        }
         model.addAttribute("teams", this.teamService.listAll());
         model.addAttribute("playerPositions", Arrays.stream(PlayerPosition.values()).toList());
         return "form";
@@ -81,7 +87,7 @@ public class PlayersController {
      *
      * @return The view "list.html".
      */
-    @PreAuthorize("hasRole('ADMIN')")
+//    @PreAuthorize("hasRole('ADMIN')")
     @PostMapping()
     public String create(@RequestParam String name, @RequestParam String bio, @RequestParam Double pointsPerGame, @RequestParam PlayerPosition position, @RequestParam Long team) {
         this.playerService.create(name, bio, pointsPerGame, position, team);
@@ -95,7 +101,7 @@ public class PlayersController {
      *
      * @return The view "list.html".
      */
-    @PreAuthorize("hasRole('ADMIN')")
+//    @PreAuthorize("hasRole('ADMIN')")
     @PostMapping("/{id}")
     public String update(@PathVariable Long id, @RequestParam String name, @RequestParam String bio, @RequestParam Double pointsPerGame, @RequestParam PlayerPosition position, @RequestParam Long team) {
         this.playerService.update(id, name, bio, pointsPerGame, position, team);
@@ -109,7 +115,7 @@ public class PlayersController {
      *
      * @return The view "list.html".
      */
-    @PreAuthorize("hasRole('ADMIN')")
+//    @PreAuthorize("hasRole('ADMIN')")
     @PostMapping("/{id}/delete")
     public String delete(@PathVariable Long id) {
         this.playerService.delete(id);
@@ -123,7 +129,7 @@ public class PlayersController {
      *
      * @return The view "list.html".
      */
-    @PreAuthorize("hasRole('USER')")
+//    @PreAuthorize("hasRole('USER')")
     @PostMapping("/{id}/vote")
     public String vote(@PathVariable Long id) {
         this.playerService.vote(id);

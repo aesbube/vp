@@ -1,0 +1,82 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <title>WP Exam</title>
+</head>
+<body>
+
+<div>
+    <!-- The form below should invoke the method MoviesController.showMovies -->
+    <form id="filter-form">
+        <label for="rating">Rating</label>
+        <input id="rating" type="number" name="rating"/>
+        <label for="genre">Genre</label>
+        <select id="genre" name="genre">
+            <option value="">All</option>
+            <option th:each="gen : ${genres}"
+                    th:value="${gen.name()}"
+                    th:text="${gen.name()}"
+                    th:selected="${gen.name() == genre}">
+            </option>
+
+        </select>
+        <button id="filter" type="submit">Filter</button>
+    </form>
+    <div>
+        <th:block sec:authorize="hasRole('ADMIN')">
+            <a href="/movies/add" class="add-item">
+                Add new movie
+            </a>
+        </th:block>
+    </div>
+    <table>
+        <tr>
+            <th>Movie name</th>
+            <th>Description</th>
+            <th>Rating</th>
+            <th>Genre</th>
+            <th>Director</th>
+            <th>Votes for PCA</th>
+            <th>Actions</th>
+        </tr>
+        <!-- For each movie you should have one <tr> like below -->
+        <tr th:each="movie : ${movies}" class="item">
+            <td th:text="${movie.getName()}"></td>
+            <td th:text="${movie.getDescription()}"></td>
+            <td th:text="${movie.getRating()}"></td>
+            <td th:text="${movie.getGenre() != null} ? ${movie.getGenre().name()} : 'No genre'"></td>
+            <td th:text="${movie.getDirector() != null} ? ${movie.getDirector().getName()} : 'No director'"></td>
+            <td th:text="${movie.getVotes()}"></td>
+            <td>
+                <!-- MoviesController.delete -->
+                <th:block sec:authorize="hasRole('ADMIN')">
+                    <form th:action="@{'/movies/{id}/delete' (id=${movie.getId()})}"
+                          th:method="POST"
+                    >
+                        <button type="submit" class="delete-item">Delete</button>
+                    </form>
+                    <!-- MoviesController.showEdit -->
+                    <a th:href="@{'/movies/{id}/edit' (id=${movie.getId()})}" class="edit-item">Edit</a>
+                </th:block>
+                <!-- MoviesController.vote -->
+                <th:block sec:authorize="hasRole('USER')">
+                    <form th:action="@{'/movies/{id}/vote' (id=${movie.getId()})}"
+                          th:method="POST"
+                    >
+                        <button type="submit" class="like-item">Vote for Movie</button>
+                    </form>
+                </th:block>
+            </td>
+        </tr>
+    </table>
+
+</div>
+<div>
+    <ul id="nav">
+        <li><a href="/">Home</a></li>
+        <li><a href="/login">Login</a></li>
+        <li><a href="/logout">Logout</a></li>
+    </ul>
+</div>
+</body>
+</html>
