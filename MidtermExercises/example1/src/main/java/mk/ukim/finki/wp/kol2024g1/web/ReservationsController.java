@@ -90,7 +90,7 @@ public class ReservationsController {
 
     /**
      * This method should create a reservation given the arguments it takes.
-     * The method should be mapped on path '/reservations'.
+     * The method should be mapped on path '/reserv ations'.
      * After the reservation is created, all reservations should be displayed.
      *
      * @return The view "list.html".
